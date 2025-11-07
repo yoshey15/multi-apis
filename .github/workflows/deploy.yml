@@ -6,6 +6,7 @@ on:
     paths:
       - "users-api/**"
       - "products-api/**"
+      - "doctors-api/**"
       - ".github/workflows/deploy.yml"
   workflow_dispatch:
 
@@ -23,9 +24,9 @@ jobs:
           - service: products-api
             context: products-api
             image: products-api
-          - service: citas-api
-            context: citas-api
-            image: citas-api 
+          - service: doctors-api
+            context: doctors-api
+            image: doctors-api 
 
     steps:
       - name: 📥 Checkout
@@ -53,3 +54,7 @@ jobs:
           docker tag  ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:latest ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:${{ steps.vars.outputs.TAG }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:latest
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:${{ steps.vars.outputs.TAG }}
+      - name: 🔄 Trigger WebApp (Kudu) para doctors
+        if: matrix.service == 'doctors-api'
+        run: |
+          curl -sS -X POST -L "${{ secrets.DOCTORS_KUDU_HOOK }}"
