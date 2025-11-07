@@ -54,7 +54,9 @@ jobs:
           docker tag  ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:latest ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:${{ steps.vars.outputs.TAG }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:latest
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ matrix.image }}:${{ steps.vars.outputs.TAG }}
-      - name: 🔄 Trigger WebApp (Kudu) para doctors
-        if: matrix.service == 'doctors-api'
+      - name: Trigger Kudu (optional)
+        if: always()
         run: |
-          curl -sS -X POST -L "${{ secrets.DOCTORS_KUDU_HOOK }}"
+          curl -sS -X POST "${{ secrets.DOCTORS_KUDU_HOOK }}" \
+            -H "Content-Type: application/json" \
+            -d '{"action":"push"}' || true
