@@ -1,15 +1,18 @@
 FROM node:20-alpine
-ENV NODE_ENV=production
+
 WORKDIR /app
 
-# copia package.json + package-lock.json
+# Copia ambos por si existe package-lock (si no existe, igual funciona)
 COPY package*.json ./
-RUN npm ci --omit=dev
 
-# copia el código
+# Usa npm install (no npm ci) para evitar el error por falta de package-lock
+RUN npm install --omit=dev
+
+# Copia el código
 COPY src ./src
 
-# expone y arranca
+# Puerto (Azure usará WEBSITES_PORT=4003)
+ENV PORT=4003
 EXPOSE 4003
-ENV PORT=4003 SERVICE_NAME=doctors-api
-CMD ["node", "src/index.js"]
+
+CMD ["node", "src/app.js"]
