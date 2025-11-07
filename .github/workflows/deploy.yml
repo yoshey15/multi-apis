@@ -23,6 +23,9 @@ jobs:
           - service: products-api
             context: products-api
             image: products-api
+          - service: citas-api
+            context: citas-api
+            image: citas-api 
 
     steps:
       - name: 📥 Checkout
